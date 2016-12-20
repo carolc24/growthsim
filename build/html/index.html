@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to GrowthSim’s documentation! &#8212; growthsim 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-growthsim-s-documentation">
+<h1>Welcome to GrowthSim&#8217;s documentation!<a class="headerlink" href="#welcome-to-growthsim-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>GrowthSim is a Python package designed to test the metabolic load
+of a synthetic genetic circuit in a cell by simulating the growth
+of multiple cell strains in the same environment.  The model framework
+constrains protein production with the availability of nutrients, which
+are made available in a resource pool shared by all cells.  This allows
+different strains to outcompete one another over time.  The package
+provides tools to build cell strains with customized proteins and interaction
+pathways, merge a set of strains into a full population, and simulate
+the population&#8217;s growth over time with user-defined initial conditions.</p>
+</div>
+<div class="section" id="classes-and-methods">
+<h2>Classes and Methods<a class="headerlink" href="#classes-and-methods" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="strain">
+<em class="property">class </em><code class="descname">strain</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#strain" title="Permalink to this definition">¶</a></dt>
+<dd><p>The strain class extends the sbmlModel class from the simplesbml module, with
+additional functions for adding protein pathways and creating deep copies of itself.
+Upon initialization, it automatically loads a model of nutrient transport, metabolism,
+transcription, ribosome-RNA binding, translation, and degradation.  Only one cell is
+tracked, and the external nutrient concentration is held constant, but this is changed
+when the strain is added to a population.</p>
+<dl class="function">
+<dt id="strain.addProtein">
+<code class="descname">addProtein</code><span class="sig-paren">(</span><em>self, protein_id, n=300, txn_rate='we*a/(thetax + a)', modifiers=['a'], deg_rate='0'</em><span class="sig-paren">)</span><a class="headerlink" href="#strain.addProtein" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a protein with a given ID to the strain.  <em>n</em> is the protein length.
+<em>txn_rate</em> is an expression describing the protein&#8217;s transcription rate. Add
+parameters to the strain using addParameter() before calling addProtein().
+Also remember to include a rate-limiting term for <em>a</em> in Michaelis-Menten form.
+<em>modifiers</em> is a list of species used in the transcription rate law.
+<em>deg_rate</em> is an expression for protein degradation rate, which defaults to 0.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="strain.clone">
+<code class="descname">clone</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#strain.clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a deep copy of the current strain and return it.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="population">
+<em class="property">class </em><code class="descname">population</code><span class="sig-paren">(</span><em>self</em>, <em>tag_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#population" title="Permalink to this definition">¶</a></dt>
+<dd><p>The population class also extends simplesbml.sbmlModel.  It has an additional attribute
+strains, which is a dictionary of strain objects paired with &#8220;ID tag&#8221; strings as keys.
+Upon initialization, the strains are processed to set appropriate initial conditions and
+be tracked as a population of cells, with the population size as a state variable.  External
+nutrient concentration becomes a state variable with influx and efflux, simulating a chemostat.</p>
+<dl class="function">
+<dt id="population.addStrain">
+<code class="descname">addStrain</code><span class="sig-paren">(</span><em>self</em>, <em>modn</em>, <em>tag</em><span class="sig-paren">)</span><a class="headerlink" href="#population.addStrain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Process and add a new strain to the population.  The tag argument is a string that is appended
+to the name of each state variable in the strain to distinguish it from other strains.</p>
+<dl class="function">
+<dt id="population.simulate">
+<code class="descname">simulate</code><span class="sig-paren">(</span><em>self</em>, <em>tstart</em>, <em>tend</em>, <em>nsteps</em><span class="sig-paren">)</span><a class="headerlink" href="#population.simulate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Simulate the population from time <em>tstart</em> to time <em>tend</em> with a total of <em>nsteps</em> timesteps.
+Returns a list of the population size for each strain at each timestep.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Here is an example of a population with two variants of a strain with a repressilator
+(without a reporter protein) and a &#8220;wild-type&#8221; strain with no additional proteins:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">growthsim</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">growthsim</span><span class="o">.</span><span class="n">strain</span><span class="p">();</span>
+<span class="n">model</span><span class="o">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s2">&quot;wg&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
+<span class="n">model</span><span class="o">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s2">&quot;Kg&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
+<span class="n">model</span><span class="o">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s2">&quot;hg&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+<span class="n">model</span><span class="o">.</span><span class="n">addParameter</span><span class="p">(</span><span class="s2">&quot;dg&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">4</span><span class="p">);</span>
+<span class="n">model</span><span class="o">.</span><span class="n">addProtein</span><span class="p">(</span><span class="s2">&quot;g1&quot;</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;wg * a / (thetax + a) / (1 + pow(g3/Kg, hg))&quot;</span><span class="p">,</span> \
+<span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;g3&quot;</span><span class="p">],</span> <span class="s2">&quot;dg&quot;</span><span class="p">);</span>
+<span class="n">model</span><span class="o">.</span><span class="n">addProtein</span><span class="p">(</span><span class="s2">&quot;g2&quot;</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;wg * a / (thetax + a) / (1 + pow(g1/Kg, hg))&quot;</span><span class="p">,</span> \
+<span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;g1&quot;</span><span class="p">],</span> <span class="s2">&quot;dg&quot;</span><span class="p">);</span>
+<span class="n">model</span><span class="o">.</span><span class="n">addProtein</span><span class="p">(</span><span class="s2">&quot;g3&quot;</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;wg * a / (thetax + a) / (1 + pow(g2/Kg, hg))&quot;</span><span class="p">,</span> \
+<span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;g2&quot;</span><span class="p">],</span> <span class="s2">&quot;dg&quot;</span><span class="p">);</span>
+
+<span class="n">model2</span> <span class="o">=</span> <span class="n">growthsim</span><span class="o">.</span><span class="n">strain</span><span class="p">();</span>
+
+<span class="n">model3</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">clone</span><span class="p">();</span>
+<span class="n">model3</span><span class="o">.</span><span class="n">getParameter</span><span class="p">(</span><span class="s2">&quot;wg&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+<span class="n">tag_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;anc&#39;</span><span class="p">:</span><span class="n">model2</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="s1">&#39;rep&#39;</span><span class="p">:</span><span class="n">model</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="s1">&#39;knock&#39;</span><span class="p">:</span><span class="n">model3</span><span class="o">.</span><span class="n">clone</span><span class="p">()};</span>
+<span class="n">model_combo</span> <span class="o">=</span> <span class="n">growthsim</span><span class="o">.</span><span class="n">population</span><span class="p">(</span><span class="n">tag_dict</span><span class="p">);</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">model_combo</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">1001</span><span class="p">);</span>
+
+<span class="n">labels</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">model_combo</span><span class="o">.</span><span class="n">strains</span><span class="o">.</span><span class="n">keys</span><span class="p">());</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">result</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">result</span><span class="p">[:,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;N_&quot;</span> <span class="o">+</span> <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to GrowthSim&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#classes-and-methods">Classes and Methods</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Caroline Cannistra.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
